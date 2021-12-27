@@ -1,8 +1,19 @@
+/* eslint-disable prefer-object-spread */
+/* eslint-disable no-shadow */
 const fs = require('fs');
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
+
+exports.validateReqBody = (req, res, next) => {
+  if (!req.body || !req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'failed',
+    });
+  }
+  next();
+};
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
