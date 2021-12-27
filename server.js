@@ -18,6 +18,17 @@ mongoose
     console.log('db connection successful');
   });
 
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'A tour must have a name'],
+    unique: true,
+  },
+  price: { type: Number, required: [true, 'A tour must have a price'] },
+  rating: { type: Number, default: 4.5 },
+});
+const Tour = mongoose.Model('Tour', tourSchema);
+
 const app = require('./app');
 
 const port = process.env.PORT || 3000;
