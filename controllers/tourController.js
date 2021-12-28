@@ -31,34 +31,6 @@ exports.createTour = async (req, res) => {
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
-    //2)sorting
-    // if (req.query.sort) {
-    //   query = query.sort(req.query.sort);
-    // } else {
-    //   query.sort('-createdAt');
-    // }
-
-    //3) field limiting
-    // if (req.query.fields) {
-    //   const fields = req.query.fields.split(',').join(' ');
-    //   query = query.select(fields);
-    // } else {
-    //   query = query.select('-__v');
-    // }
-
-    //4) pagination
-    // const page = req.query.page * 1 || 1;
-    // const limit = req.query.limit * 1 || 100;
-    // const skip = (page - 1) * limit;
-    // query = query.skip(skip).limit(limit);
-
-    // if (req.query.page) {
-    //   const numTours = await Tour.countDocuments();
-    //   if (skip >= numTours) {
-    //     console.log('not enough tours');
-    //     throw new Error('This page does not exist');
-    //   }
-    // }
 
     //execute query
     const features = new APIfeatures(Tour.find(), req.query)
@@ -124,6 +96,49 @@ exports.deleteTour = async (req, res) => {
   } catch (err) {
     res.stauts(404).json({
       stauts: 'fail',
+    });
+  }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: '$difficulty',
+          num: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: {
+          avgPrice: 1,
+        },
+      },
+      {
+        $match: {
+          _id: { $ne: 'easy' },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      data: err,
     });
   }
 };
