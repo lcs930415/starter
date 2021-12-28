@@ -16,7 +16,7 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a group size'],
   },
   difficulty: {
-    tyep: String,
+    type: String,
     required: [true, 'Atour must have a difficulty'],
   },
   price: { type: Number, required: [true, 'A tour must have a price'] },
