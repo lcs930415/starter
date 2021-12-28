@@ -2,14 +2,23 @@
 /* eslint-disable no-shadow */
 const Tour = require('../models/tourModel');
 
-exports.validateReqBody = (req, res, next) => {
-  if (!req.body || !req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: 'failed',
+exports.createTour = async (req, res) => {
+  try {
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
     });
   }
-  next();
 };
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -31,13 +40,6 @@ exports.getTourById = (req, res) => {
       status: 'not found',
     });
   }
-};
-
-exports.postTour = (req, res) => {
-  res.status(201).json({
-    status: 'success',
-    data: { tour: {} },
-  });
 };
 
 exports.patchTour = (req, res) => {
