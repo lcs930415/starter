@@ -3,6 +3,13 @@
 const { length } = require('../app');
 const Tour = require('../models/tourModel');
 
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
@@ -22,6 +29,7 @@ exports.createTour = async (req, res) => {
 
 exports.getAllTours = async (req, res) => {
   try {
+    console.log(req.query);
     //1a) query
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
@@ -47,13 +55,16 @@ exports.getAllTours = async (req, res) => {
 
     //4) pagination
     const page = req.query.page * 1 || 1;
-    const limit = req.quer.limit * 1 || 100;
+    const limit = req.query.limit * 1 || 100;
     const skip = (page - 1) * limit;
     query = query.skip(skip).limit(limit);
 
     if (req.query.page) {
       const numTours = await Tour.countDocuments();
-      if (skip >= numTours) throw new Error('This page does not exist');
+      if (skip >= numTours) {
+        console.log('not enough tours');
+        throw new Error('This page does not exist');
+      }
     }
 
     //execute query
