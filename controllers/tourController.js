@@ -1,10 +1,6 @@
 /* eslint-disable prefer-object-spread */
 /* eslint-disable no-shadow */
-const fs = require('fs');
-
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
+const Tour = require('../models/tourModel');
 
 exports.validateReqBody = (req, res, next) => {
   if (!req.body || !req.body.name || !req.body.price) {
@@ -17,15 +13,14 @@ exports.validateReqBody = (req, res, next) => {
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
-    results: tours.length,
-    data: { tours },
+    // results: tours.length,
+    // data: { tours },
   });
 };
 
 exports.getTourById = (req, res) => {
   const id = req.params.id * 1;
-  const tour = tours.find((tour) => tour.id === id);
-  console.log(tour);
+  const tour = null;
   if (tour) {
     res.status(200).json({
       status: 'success',
@@ -39,20 +34,10 @@ exports.getTourById = (req, res) => {
 };
 
 exports.postTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
-
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: { tour: newTour },
-      });
-    }
-  );
+  res.status(201).json({
+    status: 'success',
+    data: { tour: {} },
+  });
 };
 
 exports.patchTour = (req, res) => {
