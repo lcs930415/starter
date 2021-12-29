@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow-callback */
 const mongoose = require('mongoose');
 
 const tourSchema = new mongoose.Schema(
@@ -56,6 +57,22 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+//Doc middleware runs before .save() command and .create() command
+tourSchema.pre('save', function (next) {
+  //"this" refers to the document being processed
+  //console.log("first doc middleware");
+  next();
+});
+
+tourSchema.pre('save', function (next) {
+  //console.log("will save document")
+  next();
+});
+
+tourSchema.post('save', function (doc, next) {
+  //console.log("second middleware")
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
