@@ -1,5 +1,6 @@
 /* eslint-disable prefer-arrow-callback */
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -10,6 +11,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'input tour name is too long>40'],
       minlength: [10, 'input tour name is too short<10'],
+      validate: [validator.isAlpha, ' Tour name should only contain alphabets'],
     },
     duration: {
       type: Number,
@@ -38,7 +40,15 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          return val <= this.price;
+        },
+        message: 'discount price should be below regular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
