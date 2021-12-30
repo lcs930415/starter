@@ -32,3 +32,10 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+process.on('uncaughtException', (err) => {
+  console.log('unhandled exception detected');
+  server.close(() => {
+    process.exit(1);
+  });
+});
