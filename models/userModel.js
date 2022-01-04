@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password'],
     minlength: [8, 'Password must be at least 8 characters'],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -31,6 +32,7 @@ const userSchema = new mongoose.Schema({
       message: 'Password and Confirm are different',
     },
   },
+  passwordChangedAt: Date,
 });
 
 //run if password is modified. it hashes the password using bcrypt.js
@@ -40,6 +42,21 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function (inputPw, DBpw) {
+  return bcrypt.compare(inputPw, DBpw);
+};
+
+userSchema.methods.changedPasswordRecently = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+  return false;
+};
 
 const User = mongoose.model('User', userSchema);
 
