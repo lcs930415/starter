@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -12,6 +13,7 @@ const signToken = (id) =>
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
+    role: req.body.role,
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
@@ -44,7 +46,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   //3) if everything ok, send token to client
   const token = signToken(user._id);
-  console.log(token);
+
   res.status(200).json({
     status: 'success',
     token,
@@ -83,3 +85,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = userInDb;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+    next();
+  };
+};
