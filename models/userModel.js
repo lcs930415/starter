@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 //run if password is modified. it hashes the password using bcrypt.js
@@ -48,6 +53,21 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
+  next();
+});
+
+//Change passwordChangeAt property before save
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+// Only return active users for finding methods
+userSchema.pre(/^find/, function (next) {
+  //"this" points to the current querry
+  this.find({ active: { $ne: false } });
   next();
 });
 
