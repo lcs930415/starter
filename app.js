@@ -68,7 +68,7 @@ app.all('*', (req, res, next) => {
   next(new AppError('Cannot find the requested url', 404));
 });
 
-//central error handler
+//central error handlerr
 app.use(globalErrorHandler);
 
 module.exports = app;
