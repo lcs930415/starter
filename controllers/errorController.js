@@ -26,7 +26,7 @@ const handleValidationErrorDB = (err) => {
 
 const sendDevError = (err, res) => {
   res.status(err.statusCode).json({
-    stauts: err.status,
+    status: err.status,
     message: err.message,
     err: err,
     stack: err.stack,
@@ -37,7 +37,7 @@ const sendProdError = (err, res) => {
   //operational, trusted error: send message to client
   if (err.isOperational) {
     res.status(err.statusCode).json({
-      stauts: err.status,
+      status: err.status,
       message: err.message,
     });
   }
