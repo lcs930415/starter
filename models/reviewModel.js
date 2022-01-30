@@ -30,4 +30,9 @@ const reviewSchema=mongoose.Schema({
     toObject: { virtuals: true },
 })
 
+reviewSchema.pre(/^find/,function(next){
+    this.populate('user').populate('tour')
+    next();
+})
+
 module.exports=mongoose.model('Review',reviewSchema);
