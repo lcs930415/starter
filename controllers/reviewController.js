@@ -5,7 +5,7 @@ const factory = require('./handlerFactory');
 exports.getAllReviews = catchAsync(async (req, res, next) => {
   //allow nested route, where we specify tourId in the url params
   let filter = {};
-  if (!req.params.tourId) filter = { tour: req.params.tourId };
+  if (req.params.tourId) filter = { tour: req.params.tourId };
 
   const reviews = await Review.find(filter);
   res.status(200).json({
