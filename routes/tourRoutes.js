@@ -2,11 +2,11 @@ const express = require('express');
 
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
-const reviewRouter=require('../routes/reviewRoutes')
+const reviewRouter = require('../routes/reviewRoutes');
 
 const router = express.Router();
 
-router.use('/:tourId/reviews',reviewRouter)
+router.use('/:tourId/reviews', reviewRouter);
 
 router.param('id', (req, res, next, val) => {
   console.log(`tour id is ${val}`);
