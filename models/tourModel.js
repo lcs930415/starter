@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback */
 const mongoose = require('mongoose');
 const validator = require('validator');
-const User=require('./userModel')
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -70,46 +70,49 @@ const tourSchema = new mongoose.Schema(
       select: false,
     },
     startDates: [Date],
-    secretTour:{
-      type:Boolean,
-      default:false
+    secretTour: {
+      type: Boolean,
+      default: false,
     },
-    startLocation:{
+    startLocation: {
       //GeoJson
-      type:{
-        type:String,
-        default:'Point',
-        enum:['Point']
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
       },
-      coordinates:[Number],
-      address:String,
-      description:String
+      coordinates: [Number],
+      address: String,
+      description: String,
     },
-    locations:[
+    locations: [
       {
-        type:{
-          type:String,
-          default:'Point',
-          enum:['Point'],
-          coordinates:[Number],
-          address:String,
-          description:String,
-          day:Number
-        }
-      }
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+          coordinates: [Number],
+          address: String,
+          description: String,
+          day: Number,
+        },
+      },
     ],
-    guides:[
+    guides: [
       {
-        type:mongoose.Schema.ObjectId,
-        ref:'User'
-      }
-    ]
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
+
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
@@ -134,19 +137,19 @@ tourSchema.post('save', function (doc, next) {
 });
 
 //virtual populate
-tourSchema.virtual('reviews',{
-  ref:'Review',
-  foreignField:'tour',
-  localField:'_id'
-})
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
 
-tourSchema.pre(/^find/,function(next){
+tourSchema.pre(/^find/, function (next) {
   this.populate({
-    path:"guides",
-    select:"-__v -passwordChangedAt"
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
   });
   next();
-})
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
